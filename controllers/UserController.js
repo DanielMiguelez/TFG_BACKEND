@@ -29,6 +29,8 @@ const UserController = {
                 .populate({
                     path:"postsIds"
                 })
+                .limit(req.query.limit)
+                .skip((req.query.page -1)* req.query.limit)
 
             if(users.length === 0){
                 return res.status(400).send({msg:"there are no users"})

@@ -7,10 +7,12 @@ const PostSchema = new mongoose.Schema({
     completed: { type: Boolean, default: false },
     date: { type: Date, default: Date.now },
     image: String,
-    comments: [{
+
+    reviews: [{
         userId: { type: ObjectId, ref: 'User' },
         comment: String
     }],
+    
     likes: [{ type: ObjectId }],
     userId: { type: ObjectId, ref: 'User', required: true }
 }, { timestamps: true })

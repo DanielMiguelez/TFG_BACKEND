@@ -70,6 +70,25 @@ const PostController = {
             console.error(error);
             res.status(500).send({msg:"Could not update the post", error})
         }
+    },
+
+    async insertComment(req, res){
+        try {
+            const post = await Post.findByIdAndUpdate(req.params._id, 
+                {
+                    $push:{
+                        reviews:{
+                            comment : req.body.comment, userId:req.user._id
+                        }
+                    }
+                },
+                {new:true}
+            );
+            res.status(201).send({msg:"comment sent", post})
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({msg:"Could not create a review", error})
+        }
     }
 }
 
