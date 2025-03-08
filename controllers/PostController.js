@@ -34,12 +34,41 @@ const PostController = {
 
     async getPostByTitle (req, res){
         try {
+
+            if(req.params.title.length > 35){
+                return res.status(400).send("Search too long")
+            }
             const title = new RegExp(req.params.title, "i");
             const posts = await Post.find({title})
             res.send({msg: "Posts by title", posts})
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not find your posts", error})
+        }
+    },
+
+    async deletePostById(req, res) {
+        try {
+            const post = await Post.findByIdAndDelete(req.params._id)
+
+            if(!post){
+                return res.status(400).send("your post does not exist")
+            }
+
+            res.status(200).send({msg:"post deleted", post})
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({msg:"Could not delete the post", error})
+        }
+    },
+
+    async updatePostById (req, res) {
+        try {
+            const newPost = await Post.findByIdAndUpdate(req.params._id, req.body, {new:true})
+            res.status(200).send({msg:"product updated", newPost})
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({msg:"Could not update the post", error})
         }
     }
 }
