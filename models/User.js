@@ -21,7 +21,8 @@ const UserSchema = new mongoose.Schema({
         required: [true, "Por favor rellena tu fecha de nacimiento"],
     },
     role: { type: String, default: "user"},
-    tokens:[]
+    tokens:[],
+    activities: [{ type: ObjectId, ref: 'Activity' }]
 })
 
 const User = mongoose.model('User', UserSchema)

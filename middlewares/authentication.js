@@ -14,7 +14,11 @@ const authentication = async (req, res, next) => {
             res.status(401).send({msg:"You have no permission"})
         }
 
-        req.user = user;
+        
+        // IMPORTANTE  ! Asignamos el user que posee el token al req.user para poder 
+        // ser accedido despues desde el activity, y lo relaciono con el user que creo la actividad.
+        
+        req.user = user; 
         next();
 
     } catch (error) {
