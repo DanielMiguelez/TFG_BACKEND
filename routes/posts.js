@@ -1,13 +1,17 @@
 const express = require("express")
 const router = express.Router();
 
-const PostController = require("../controllers/PostController")
+// Middlewares para autenticar usuarios.
 
-router.post("/createPost", PostController.createPost)
+const { authentication } = require("../middlewares/authentication");
+
+const PostController = require("../controllers/PostController");
+
+router.post("/createPost", authentication, PostController.createPost)
 router.get("/getAllPosts", PostController.getAllPosts)
 router.get("/getPostById/:_id", PostController.getPostById)
 router.get("/getPostByTitle/:title", PostController.getPostByTitle)
-router.delete("/deletePostById/:_id", PostController.deletePostById)
-router.put("/updatePostById/:_id", PostController.updatePostById)
+router.delete("/deletePostById/:_id", authentication, PostController.deletePostById)
+router.put("/updatePostById/:_id", authentication, PostController.updatePostById)
 
 module.exports = router;
