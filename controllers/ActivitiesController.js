@@ -1,4 +1,5 @@
 const Activity = require ("../models/Activity")
+const User = require("../models/User")
 
 const ActivityController = {
 
@@ -10,10 +11,14 @@ const ActivityController = {
                 description: req.body.description,
                 status: 'open',
                 userId: req.user._id,
-                participantIds: req.body.participantIds || [],
+                participantIds: [req.user._id, ...(req.body.participantIds || [])],
                 date: req.body.date,
                 location: req.body.location,
                 image: req.body.image,
+            });
+
+            await User.findByIdAndUpdate(req.user._id, { 
+                $push: { activitiesIds: activity._id } 
             });
 
             res.status(201).send({msg: `${req.user.name}  has creado la actividad !`, activity})

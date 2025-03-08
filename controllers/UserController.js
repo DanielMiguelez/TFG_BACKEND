@@ -17,6 +17,23 @@ const UserController = {
         }
     },
 
+    async getAllUsers (req, res){
+        try {
+            const users = await User.find()
+                .populate({
+                    path: "activitiesIds",
+                })
+
+            if(users.length === 0){
+                return res.status(400).send({msg:"there are no users"})
+            }
+
+            res.status(200).send({msg:"users obtained", users})
+        } catch (error) {
+            res.status(500).send({ msg: "There was an error retrieving the users", error });
+        }
+    },
+
     async login (req, res){
         try {
             const user = await User.findOne({
