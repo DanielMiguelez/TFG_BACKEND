@@ -16,10 +16,25 @@ const ActivityController = {
                 image: req.body.image,
             });
 
-            res.status(201).send({msg:"Activity created !", activity})
+            res.status(201).send({msg: `${req.user.name}  has creado la actividad !`, activity})
         } catch (error) {
             console.error(error);
             res.status(500).send({ msg: "Not possible to create the activity, yet...", error });
+        }
+    },
+
+    async updateActivity (req, res) {
+        try {
+            const activity = await Activity.findByIdAndUpdate(
+                req.params._id,
+                {
+                    ...req.body, userId:req.user._id
+                },
+                {new:true}
+            );
+            res.status(200).send({msg: `${req.user.name} you updated your activity !`, activity})
+        } catch (error) {
+            
         }
     }
 }

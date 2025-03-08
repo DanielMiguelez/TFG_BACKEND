@@ -4,5 +4,6 @@ const { authentication } = require("../middlewares/authentication");
 const router = express.Router();
 
 router.post("/createActivity", authentication, ActivityController.createActivity)
+router.put("/updateActivity/:_id", authentication, ActivityController.updateActivity)
 
 module.exports = router;
