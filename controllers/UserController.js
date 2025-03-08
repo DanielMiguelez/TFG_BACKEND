@@ -1,4 +1,7 @@
 const User = require("../models/User")
+const Activity = require("../models/Activity")
+const Post = require("../models/Post")
+
 const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken')
 
@@ -22,6 +25,9 @@ const UserController = {
             const users = await User.find()
                 .populate({
                     path: "activitiesIds",
+                })
+                .populate({
+                    path:"postsIds"
                 })
 
             if(users.length === 0){
@@ -73,6 +79,22 @@ const UserController = {
         } catch (error) {
             console.error(error);
             return res.status(500).send({ msg: "Could not log out" });
+        }
+    },
+
+    async deleteUser (req, res){
+        try {
+
+            await Activity.deleteMany({userId: req.user._id})
+
+            await Post.deleteMany({userId:req.user._id})
+
+            await User.findByIdAndDelete(req.user._id);
+
+            res.status(200).send({ msg: "User and their activities and posts have been deleted" });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Could not delete" });
         }
     }
     
