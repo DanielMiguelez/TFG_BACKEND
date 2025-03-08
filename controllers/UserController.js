@@ -47,6 +47,17 @@ const UserController = {
         }
     },
 
+    async logout (req,res){
+        try {
+            await User.findByIdAndUpdate(req.user._id, {
+                $pull : {tokens:req.headers.authorization}
+            })
+            res.status(200).send({msg:"Logout successful"})
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Could not log out" });
+        }
+    }
     
 }
 

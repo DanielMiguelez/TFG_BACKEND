@@ -1,4 +1,5 @@
 const User = require("../models/User")
+const Activity = require("../models/Activity")
 const jwt = require("jsonwebtoken")
 
 require("dotenv").config();
@@ -33,11 +34,24 @@ const isAdmin = async (req, res, next) => {
 
     if (!admins.includes(req.user.role)) {
         return res.status(403).send({
-            message: 'No tienes permisos'
+            message: `${req.user.name} you are not an admin.`
         });
     }
     next();
 }
 
+const isAuthor = async (req, res, next) =>{
+   try {
+    const activity = await Activity.findById(req.params._id)
+    if(activity.userId.toString() !== req.user._id.toString()){
+        return res.status(400).send({msg:"You are not the activity creator, you cannot modify it."});
+    }
+    next();
+   } catch (error) {
+    console.error(error)
+    return res.status(500).send({error, msg:"could not check the creator..."})
+   }
+}
 
-module.exports = { authentication, isAdmin }
+
+module.exports = { authentication, isAdmin, isAuthor }
