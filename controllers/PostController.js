@@ -32,11 +32,11 @@ const PostController = {
         }
     },
 
-    async getPostByName (req, res){
+    async getPostByTitle (req, res){
         try {
-            const name = new RegExp(req.params.name, "i");
-            const posts = await Post.find({name})
-            res.status(200).send({posts})
+            const title = new RegExp(req.params.title, "i");
+            const posts = await Post.find({title})
+            res.send({msg: "Posts by title", posts})
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not find your posts", error})
