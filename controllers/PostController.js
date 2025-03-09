@@ -1,4 +1,5 @@
 const Post = require("../models/Post")
+const User = require ("../models/User")
 
 const PostController = {
 
@@ -88,6 +89,26 @@ const PostController = {
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not create a review", error})
+        }
+    },
+
+    async likePost (req, res){
+        try {
+            const post = await Post.findByIdAndUpdate(
+                req.params._id, 
+                {$push: {likes: req.user._id}},
+                {new:true}
+            );
+             await User.findByIdAndUpdate(
+                req.user._id,
+                {$push:{likedPosts: req.params._id}},
+                {new:true}
+             )
+
+             res.status(200).send({msg:"Post liked", post})
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({msg:"Could not Like the post", error})
         }
     }
 }

@@ -98,6 +98,23 @@ const UserController = {
             console.error(error);
             return res.status(500).send({ msg: "Could not delete" });
         }
+    },
+
+    async getProfile (req, res){
+        try {
+            const user = await User.findById(req.user._id)
+                .populate("activitiesIds")
+                .populate("postsIds")
+
+            if(!user){
+                return res.status.send({msg:"user not found"})
+            }
+            
+            res.status(200).send({msg:"the user connected", user})
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Could not delete" });
+        }
     }
     
 }

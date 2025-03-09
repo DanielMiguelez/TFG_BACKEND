@@ -23,7 +23,8 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, default: "user"},
     tokens:[],
     activitiesIds: [{ type: ObjectId, ref: 'Activity' }],
-    postsIds: [{ type: ObjectId, ref: 'Post' }]
+    postsIds: [{ type: ObjectId, ref: 'Post' }],
+    likedPosts: [{ type: ObjectId, ref: 'Post' }]
 })
 
 const User = mongoose.model('User', UserSchema)
