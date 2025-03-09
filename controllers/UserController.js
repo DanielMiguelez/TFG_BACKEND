@@ -119,8 +119,15 @@ const UserController = {
 
     async joinActivity (req, res){
         try {
+
+            const activity = await Activity.findById(req.params._id);
+
+            if (!activity) {
+                return res.status(404).send({ msg: "Activity not found" });
+            }
+
             await User.findByIdAndUpdate(req.user._id, {
-                $push: {activitiesIds: req.params.id}
+                $push: {activitiesIds: req.params._id}
             });
 
             await Activity.findByIdAndUpdate(req.params.id, {
@@ -128,7 +135,7 @@ const UserController = {
                     participantIds: req.user._id
                 }
             })
-            res.status(200).send({msg:`Joined activity by : ${req.user.name}`})
+            res.status(200).send({msg:`Joined activity by : ${req.user.name}`, activity})
         } catch (error) {
             console.error(error);
             return res.status(500).send({ msg: "Could not Join the activity..." });
