@@ -115,6 +115,24 @@ const UserController = {
             console.error(error);
             return res.status(500).send({ msg: "Could not delete" });
         }
+    },
+
+    async joinActivity (req, res){
+        try {
+            await User.findByIdAndUpdate(req.user._id, {
+                $push: {activitiesIds: req.params.id}
+            });
+
+            await Activity.findByIdAndUpdate(req.params.id, {
+                $push: {
+                    participantIds: req.user._id
+                }
+            })
+            res.status(200).send({msg:`Joined activity by : ${req.user.name}`})
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Could not Join the activity..." });
+        }
     }
     
 }
