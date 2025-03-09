@@ -140,7 +140,37 @@ const UserController = {
             console.error(error);
             return res.status(500).send({ msg: "Could not Join the activity..." });
         }
+    },
+
+    async leaveActivity (req, res){
+        try {
+            const activity = await Activity.findById(req.params._id);
+
+            if (!activity) {
+                return res.status(404).send({ msg: "Activity not found" });
+            }
+
+            await User.findByIdAndUpdate(req.user._id, {
+                $pull: {
+                    activitiesIds : req.params._id
+                }
+            })
+
+            await Activity.findByIdAndUpdate(req.params.id, {
+                $pull: {
+                    participantIds: req.user._id
+                }
+            })
+
+            res.status(200).send({ msg: `User ${req.user.name} left the activity` });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Could not leave the activity..." });
+        }
     }
+
+
     
 }
 

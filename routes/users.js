@@ -10,6 +10,7 @@ router.delete("/logout", authentication, UserController.logout)
 router.get("/getAllUsers", authentication, UserController.getAllUsers)
 router.get("/getProfile/:_id", authentication, UserController.getProfile)
 router.put("/joinActivity/:_id", authentication, UserController.joinActivity);
+router.put("/leaveActivity/:_id", authentication, UserController.leaveActivity);
 
 
 module.exports = router;
