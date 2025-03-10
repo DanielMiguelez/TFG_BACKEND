@@ -6,6 +6,7 @@ const ActivitySchema = new mongoose.Schema({
     title: {type:String, required:true},
     description: {type:String, required:true},
     status : {type:String, enum: ['open', 'closed', 'in-progress'], default: 'open'},
+    completed: {type:Boolean, default:false},
 
     userId: { 
         type: ObjectId, 

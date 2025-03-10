@@ -43,9 +43,11 @@ const isAdmin = async (req, res, next) => {
 const isAuthor = async (req, res, next) =>{
    try {
     const activity = await Activity.findById(req.params._id)
-    if(activity.userId.toString() !== req.user._id.toString()){
-        return res.status(400).send({msg:"You are not the activity creator, you cannot modify it."});
+
+    if (activity.userId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).send({ msg: "You are not the activity creator or an admin, you cannot modify it." });
     }
+    
     next();
    } catch (error) {
     console.error(error)
