@@ -1,12 +1,13 @@
 require("dotenv").config();
 const express = require("express")
+const cors = require("cors")
 
 const app = express();
 const PORT = process.env.PORT || 8001
 const {dbConnection} = require("./config/config")
 
 // Linea de codigo para que postman pueda entender el formato de la peticion
-app.use(express.json())
+app.use(express.json(), cors())
 
 dbConnection()
 
