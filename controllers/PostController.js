@@ -3,15 +3,37 @@ const User = require ("../models/User")
 
 const PostController = {
 
-    async createPost (req,res){
-        try {
-            const post = await Post.create({...req.body})
-            res.status(201).send({msg:"Post created !", post})
-        } catch (error) {
-            console.error(error);
-            res.status(500).send({msg:"Could not create the post", error})
+    async createPost(req, res) {
+    try {
+
+        if (!req.user || !req.user._id) {
+            return res.status(400).json({ msg: "User not authenticated" });
         }
-    },
+
+        const newPost = {
+            title: req.body.title,
+            content: req.body.content,
+            userId: req.user._id, // Asegura que userId se incluya
+            image: req.body.image,
+            date: req.body.date
+        };
+        const post = await Post.create(newPost);
+
+
+        await User.findByIdAndUpdate(
+            req.user._id,
+            { $push: { postsIds: post._id } }, 
+            { new: true } 
+        );
+
+       
+        res.status(201).json({ msg: "Post created!", post });
+    } catch (error) {
+        console.error("Error al crear post:", error);
+        res.status(500).json({ msg: "Could not create the post", error });
+    }
+},
+
 
     async getAllPosts (req, res){
         try {
