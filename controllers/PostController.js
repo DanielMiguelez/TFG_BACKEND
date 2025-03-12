@@ -13,7 +13,7 @@ const PostController = {
         const newPost = {
             title: req.body.title,
             content: req.body.content,
-            userId: req.user._id, // Asegura que userId se incluya
+            userId: req.user._id,  
             image: req.body.image,
             date: req.body.date
         };
@@ -63,7 +63,7 @@ const PostController = {
             }
             const title = new RegExp(req.params.title, "i");
             const posts = await Post.find({title})
-            res.send({msg: "Posts by title", posts})
+            res.send(posts)
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not find your posts", error})
@@ -78,7 +78,7 @@ const PostController = {
                 return res.status(400).send("your post does not exist")
             }
 
-            res.status(200).send({msg:"post deleted", post})
+            res.status(200).send({msg:"post deleted", id:req.params._id})
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not delete the post", error})

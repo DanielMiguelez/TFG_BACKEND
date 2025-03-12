@@ -1,6 +1,7 @@
 const User = require("../models/User")
 const Activity = require("../models/Activity")
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const Post = require("../models/Post");
 
 require("dotenv").config();
 
@@ -42,10 +43,10 @@ const isAdmin = async (req, res, next) => {
 
 const isAuthor = async (req, res, next) =>{
    try {
-    const activity = await Activity.findById(req.params._id)
+    const post = await Post.findById(req.params._id)
 
-    if (activity.userId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
-            return res.status(403).send({ msg: "You are not the activity creator or an admin, you cannot modify it." });
+    if (post.userId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).send({ msg: "You are not the post creator or an admin, you cannot modify it." });
     }
     
     next();

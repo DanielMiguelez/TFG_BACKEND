@@ -2,6 +2,7 @@ const mongoose = require("mongoose")
 const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const PostSchema = new mongoose.Schema({
+
     title: { type: String, required: true },
     content: { type: String, required: true },
     completed: { type: Boolean, default: false },
@@ -15,7 +16,9 @@ const PostSchema = new mongoose.Schema({
     
     likes: [{ type: ObjectId }],
     userId: { type: ObjectId, ref: 'User', }
-}, { timestamps: true })
+}, { timestamps: true });
+
+
 
 const Post = mongoose.model('Post', PostSchema)
 module.exports = Post;
