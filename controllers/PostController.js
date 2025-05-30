@@ -97,40 +97,91 @@ const PostController = {
 
     async insertComment(req, res){
         try {
-            const post = await Post.findByIdAndUpdate(req.params._id, 
+            // Verificar que existe el comentario
+            if (!req.body.comment || req.body.comment.trim() === '') {
+                return res.status(400).send({ msg: "Comment cannot be empty" });
+            }
+
+            // Verificar que existe el post
+            const existingPost = await Post.findById(req.params._id);
+            if (!existingPost) {
+                return res.status(404).send({ msg: "Post not found" });
+            }
+
+            const post = await Post.findByIdAndUpdate(
+                req.params._id, 
                 {
                     $push:{
                         reviews:{
-                            comment : req.body.comment, userId:req.user._id
+                            comment: req.body.comment.trim(),
+                            userId: req.user._id,
+                            date: new Date()
                         }
                     }
                 },
                 {new:true}
-            );
-            res.status(201).send({msg:"comment sent", post})
+            ).populate({
+                path: 'reviews.userId',
+                select: 'name email'
+            });
+
+            res.status(201).send({msg:"Comment added successfully", post})
         } catch (error) {
             console.error(error);
-            res.status(500).send({msg:"Could not create a review", error})
+            res.status(500).send({msg:"Could not create a comment", error})
         }
     },
 
     async likePost (req, res){
         try {
-            const post = await Post.findByIdAndUpdate(
+            // Verificamos si el usuario ya dio like
+            const post = await Post.findOne({
+                _id: req.params._id,
+                likes: req.user._id
+            });
+
+            if (post) {
+                return res.status(400).send({ msg: "You already liked this post" });
+            }
+
+            // Si no ha dado like, lo añadimos
+            const updatedPost = await Post.findByIdAndUpdate(
                 req.params._id, 
-                {$push: {likes: req.user._id}},
+                {$addToSet: {likes: req.user._id}}, // $addToSet en lugar de $push para evitar duplicados
                 {new:true}
             );
-             await User.findByIdAndUpdate(
-                req.user._id,
-                {$push:{likedPosts: req.params._id}},
-                {new:true}
-             )
 
-             res.status(200).send({msg:"Post liked", post})
+            await User.findByIdAndUpdate(
+                req.user._id,
+                {$addToSet: {likedPosts: req.params._id}}, // También usamos $addToSet aquí
+                {new:true}
+            );
+
+            res.status(200).send({msg:"Post liked", post: updatedPost})
         } catch (error) {
             console.error(error);
             res.status(500).send({msg:"Could not Like the post", error})
+        }
+    },
+
+    async unlikePost (req, res){
+        try {
+            const post = await Post.findByIdAndUpdate(
+                req.params._id, 
+                {$pull: {likes: req.user._id}}, // $pull solo quitará una ocurrencia del ID
+                {new:true}
+            );
+
+            await User.findByIdAndUpdate(
+                req.user._id,
+                {$pull: {likedPosts: req.params._id}},
+                {new:true}
+            );
+
+            res.status(200).send({msg:"Post unliked", post})
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({msg:"Could not unlike the post", error})
         }
     }
 }

@@ -15,5 +15,6 @@ router.delete("/deletePostById/:_id", authentication, isAdmin, PostController.de
 router.put("/updatePostById/:_id", authentication, isAuthor, PostController.updatePostById)
 router.put("/insertComment/:_id", authentication, PostController.insertComment)
 router.put("/like/:_id", authentication, PostController.likePost)
+router.put("/unlike/:_id", authentication, PostController.unlikePost)
 
 module.exports = router;

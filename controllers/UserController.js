@@ -130,7 +130,7 @@ const UserController = {
                 $push: {activitiesIds: req.params._id}
             });
 
-            await Activity.findByIdAndUpdate(req.params.id, {
+            await Activity.findByIdAndUpdate(req.params._id, {
                 $push: {
                     participantIds: req.user._id
                 }

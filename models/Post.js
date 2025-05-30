@@ -11,14 +11,19 @@ const PostSchema = new mongoose.Schema({
 
     reviews: [{
         userId: { type: ObjectId, ref: 'User' },
-        comment: String
+        comment: { type: String, required: true },
+        date: { type: Date, default: Date.now }
     }],
     
-    likes: [{ type: ObjectId }],
+    likes: [{ type: ObjectId, ref: 'User'}],
     userId: { type: ObjectId, ref: 'User', }
 }, { timestamps: true });
 
-
+// Middleware para asegurar que los likes sean únicos
+PostSchema.pre('save', function(next) {
+    this.likes = [...new Set(this.likes)]; // Elimina duplicados
+    next();
+});
 
 const Post = mongoose.model('Post', PostSchema)
 module.exports = Post;
