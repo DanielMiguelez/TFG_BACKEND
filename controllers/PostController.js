@@ -144,10 +144,9 @@ const PostController = {
                 return res.status(400).send({ msg: "You already liked this post" });
             }
 
-            // Si no ha dado like, lo añadimos
             const updatedPost = await Post.findByIdAndUpdate(
                 req.params._id, 
-                {$addToSet: {likes: req.user._id}}, // $addToSet en lugar de $push para evitar duplicados
+                {$addToSet: {likes: req.user._id}},
                 {new:true}
             );
 
@@ -168,7 +167,7 @@ const PostController = {
         try {
             const post = await Post.findByIdAndUpdate(
                 req.params._id, 
-                {$pull: {likes: req.user._id}}, // $pull solo quitará una ocurrencia del ID
+                {$pull: {likes: req.user._id}},
                 {new:true}
             );
 

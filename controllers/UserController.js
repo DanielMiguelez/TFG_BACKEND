@@ -126,49 +126,49 @@ const UserController = {
                 return res.status(404).send({ msg: "Activity not found" });
             }
 
+            if(activity.participantIds.includes(req.user._id)){
+                return res.status(400).send({ msg: "You already joined this activity" });
+            }
+
             await User.findByIdAndUpdate(req.user._id, {
-                $push: {activitiesIds: req.params._id}
+                $addToSet: { activitiesIds: req.params._id }
             });
 
-            await Activity.findByIdAndUpdate(req.params._id, {
-                $push: {
-                    participantIds: req.user._id
-                }
-            })
-            res.status(200).send({msg:`Joined activity by : ${req.user.name}`, activity})
+            const updatedActivity = await Activity.findByIdAndUpdate(req.params._id, {
+                $addToSet: { participantIds: req.user._id }
+            }, { new: true });
+    
+            res.status(200).send({ msg: `Joined activity by: ${req.user.name}`, activity: updatedActivity });
+            
         } catch (error) {
             console.error(error);
             return res.status(500).send({ msg: "Could not Join the activity..." });
         }
     },
 
-    async leaveActivity (req, res){
+    async leaveActivity(req, res) {
         try {
-            const activity = await Activity.findById(req.params._id);
-
-            if (!activity) {
-                return res.status(404).send({ msg: "Activity not found" });
-            }
-
-            await User.findByIdAndUpdate(req.user._id, {
-                $pull: {
-                    activitiesIds : req.params._id
-                }
-            })
-
-            await Activity.findByIdAndUpdate(req.params.id, {
-                $pull: {
-                    participantIds: req.user._id
-                }
-            })
-
-            res.status(200).send({ msg: `User ${req.user.name} left the activity` });
-
+          // Elimina la actividad del array del usuario
+          await User.findByIdAndUpdate(req.user._id, {
+            $pull: { activitiesIds: req.params._id }
+          });
+      
+          // Elimina al usuario del array de participantes de la actividad
+          const updatedActivity = await Activity.findByIdAndUpdate(req.params._id, {
+            $pull: { participantIds: req.user._id }
+          }, { new: true });
+      
+          if (!updatedActivity) {
+            return res.status(404).send({ msg: "Activity not found" });
+          }
+      
+          res.status(200).send({ msg: `${req.user.name} has left the activity`, activity: updatedActivity });
         } catch (error) {
-            console.error(error);
-            return res.status(500).send({ msg: "Could not leave the activity..." });
+          console.error(error);
+          res.status(500).send({ msg: "Could not leave the activity", error });
         }
-    }
+      }
+      
 
 
     
