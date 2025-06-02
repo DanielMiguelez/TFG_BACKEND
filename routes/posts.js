@@ -7,7 +7,9 @@ const { authentication, isAdmin, isAuthor } = require("../middlewares/authentica
 
 const PostController = require("../controllers/PostController");
 
-router.post("/createPost", authentication, PostController.createPost)
+const upload = require('../middlewares/multer');
+
+router.post("/createPost", authentication, upload.single('image'), PostController.createPost)
 router.get("/getAllPosts", PostController.getAllPosts)
 router.get("/getPostById/:_id", PostController.getPostById)
 router.get("/getPostByTitle/:title", PostController.getPostByTitle)

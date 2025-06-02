@@ -3,30 +3,40 @@ const User = require("../models/User")
 
 const ActivityController = {
 
-    async createActivity (req, res) {
-
+    async createActivity(req, res) {
         try {
-            const activity = await Activity.create({
-                title: req.body.title,
-                description: req.body.description,
-                status: 'open',
-                userId: req.user._id,
-                participantIds: [req.user._id, ...(req.body.participantIds || [])],
-                date: req.body.date,
-                location: req.body.location,
-                image: req.body.image,
-            });
-
-            await User.findByIdAndUpdate(req.user._id, { 
-                $push: { activitiesIds: activity._id } 
-            });
-
-            res.status(201).send({msg: `${req.user.name}  has creado la actividad !`, activity})
+          const { title, description, status, date, location, participantIds = [] } = req.body;
+      
+          const image = req.file ? `/uploads/${req.file.filename}` : null;
+      
+          const activity = await Activity.create({
+            title,    
+            description,
+            status: status || "open",
+            userId: req.user._id,
+            participantIds: [req.user._id, ...participantIds],
+            date: date || Date.now(),
+            location,
+            image,
+          });
+      
+          await User.findByIdAndUpdate(req.user._id, {
+            $push: { activitiesIds: activity._id },
+          });
+      
+          console.log("Actividad creada:", activity);
+          res.status(201).send({ msg: `${req.user.name} ha creado la actividad!`, activity });
+      
         } catch (error) {
-            console.error(error);
-            res.status(500).send({ msg: "Not possible to create the activity, yet...", error });
+          console.error(error);
+          res.status(500).send({
+            msg: "Not possible to create the activity, yet...",
+            error,
+          });
         }
-    },
+      },
+      
+      
 
     async updateActivity (req, res) {
         try {

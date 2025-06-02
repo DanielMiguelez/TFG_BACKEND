@@ -3,15 +3,14 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 
 const ActivitySchema = new mongoose.Schema({
-    title: {type:String, required:true},
-    description: {type:String, required:true},
+    title: {type:String},
+    description: {type:String},
     status : {type:String, enum: ['open', 'closed', 'in-progress'], default: 'open'},
     completed: {type:Boolean, default:false},
 
     userId: { 
         type: ObjectId, 
-        ref: 'User', 
-        required: true 
+        ref: 'User'
     },  
 
     participantIds: [{ 
@@ -19,8 +18,8 @@ const ActivitySchema = new mongoose.Schema({
         ref: 'User' 
     }],  
     
-    date: { type: Date, required: true },  
-    location: { type: String, required: true },
+    date: { type: Date },  
+    location: { type: String },
     image: { type: String },
 }, {timestamps:true})
 

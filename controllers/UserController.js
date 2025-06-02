@@ -148,12 +148,10 @@ const UserController = {
 
     async leaveActivity(req, res) {
         try {
-          // Elimina la actividad del array del usuario
           await User.findByIdAndUpdate(req.user._id, {
             $pull: { activitiesIds: req.params._id }
           });
       
-          // Elimina al usuario del array de participantes de la actividad
           const updatedActivity = await Activity.findByIdAndUpdate(req.params._id, {
             $pull: { participantIds: req.user._id }
           }, { new: true });
