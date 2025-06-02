@@ -56,7 +56,8 @@ const ActivityController = {
 
     async getAllActivities (req, res){
         try {
-            const activities = await Activity.find()
+            const activities = await Activity.find().populate('userId', 'name')
+
              if(!activities){
                 return res.status(400).send({msg:"There are no activities for now"})
              }

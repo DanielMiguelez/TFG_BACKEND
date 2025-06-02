@@ -20,7 +20,8 @@ const authentication = async (req, res, next) => {
 
         const payload = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await User.findOne({ _id: payload._id, tokens: token });
+        const user = await User.findById(payload._id);
+
 
         if (!user) {
             return res.status(401).send({ msg: "You have no permission" });

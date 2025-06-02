@@ -117,34 +117,39 @@ const UserController = {
         }
     },
 
-    async joinActivity (req, res){
+    async joinActivity (req, res) {
         try {
-
-            const activity = await Activity.findById(req.params._id);
-
-            if (!activity) {
-                return res.status(404).send({ msg: "Activity not found" });
-            }
-
-            if(activity.participantIds.includes(req.user._id)){
-                return res.status(400).send({ msg: "You already joined this activity" });
-            }
-
-            await User.findByIdAndUpdate(req.user._id, {
-                $addToSet: { activitiesIds: req.params._id }
-            });
-
-            const updatedActivity = await Activity.findByIdAndUpdate(req.params._id, {
-                $addToSet: { participantIds: req.user._id }
-            }, { new: true });
-    
-            res.status(200).send({ msg: `Joined activity by: ${req.user.name}`, activity: updatedActivity });
-            
+          const activity = await Activity.findById(req.params._id);
+      
+          if (!activity) {
+            return res.status(404).send({ msg: "Activity not found" });
+          }
+      
+          const userIdStr = req.user._id.toString();
+          const participantsStr = activity.participantIds.map(id => id.toString());
+      
+          if (participantsStr.includes(userIdStr)) {
+            return res.status(400).send({ msg: "You already joined this activity" });
+          }
+      
+          await User.findByIdAndUpdate(req.user._id, {
+            $addToSet: { activitiesIds: req.params._id }
+          });
+      
+          const updatedActivity = await Activity.findByIdAndUpdate(
+            req.params._id,
+            { $addToSet: { participantIds: req.user._id } },
+            { new: true }
+          );
+      
+          res.status(200).send({ msg: `Joined activity by: ${req.user.name}`, activity: updatedActivity });
+      
         } catch (error) {
-            console.error(error);
-            return res.status(500).send({ msg: "Could not Join the activity..." });
+          console.error(error);
+          return res.status(500).send({ msg: "Could not join the activity...", error });
         }
-    },
+      },
+      
 
     async leaveActivity(req, res) {
         try {
