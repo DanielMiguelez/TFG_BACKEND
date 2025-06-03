@@ -8,7 +8,7 @@ const upload = require('../middlewares/multer');
 router.post("/createActivity", authentication,upload.single('image'), ActivityController.createActivity)
 router.put("/updateActivity/:_id", authentication,isAuthor, ActivityController.updateActivity)
 router.get("/getAllActivities", ActivityController.getAllActivities)
-router.delete("/deleteActivity/:_id", authentication, isAuthor, ActivityController.deleteActivity)
+router.delete("/deleteActivity/:_id", authentication, ActivityController.deleteActivity)
 router.put("/markAsCompleted/:_id", authentication, isAuthor, ActivityController.markAsCompleted)
 
 module.exports = router;
