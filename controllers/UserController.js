@@ -86,17 +86,25 @@ const UserController = {
 
     async deleteUser (req, res){
         try {
+            const userToDelete = await User.findById(req.params._id);
+            
+            if (!userToDelete) {
+                return res.status(404).send({ msg: "User not found" });
+            }
 
-            await Activity.deleteMany({userId: req.user._id})
+            // Eliminar todas las actividades del usuario
+            await Activity.deleteMany({userId: req.params._id});
 
-            await Post.deleteMany({userId:req.user._id})
+            // Eliminar todos los posts del usuario
+            await Post.deleteMany({userId: req.params._id});
 
-            await User.findByIdAndDelete(req.user._id);
+            // Eliminar el usuario
+            await User.findByIdAndDelete(req.params._id);
 
-            res.status(200).send({ msg: "User and their activities and posts have been deleted" });
+            res.status(200).send({ msg: `User ${userToDelete.name} and their activities and posts have been deleted` });
         } catch (error) {
             console.error(error);
-            return res.status(500).send({ msg: "Could not delete" });
+            return res.status(500).send({ msg: "Could not delete user", error });
         }
     },
 
